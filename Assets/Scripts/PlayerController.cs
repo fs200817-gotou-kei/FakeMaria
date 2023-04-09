@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 // TODO: Jumpとか基本的な動作を定義したinterfaceとか必要そう
 // Playerの操作一覧
@@ -37,6 +37,13 @@ public class PlayerController : MonoBehaviour
 
         // 左右ボタンクリック時の処理
         caseMoveSideButton();
+    }
+
+    // Playerがゴールの旗と接触した際に呼び出される
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        Debug.Log("ゴール");
+        SceneManager.LoadScene("ClearScene");
     }
 
     // ジャンプされた場合の処理

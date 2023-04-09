@@ -146,7 +146,8 @@ public class PlayerController : MonoBehaviour
 
     void turnPlayer(float direction)
     {
-        transform.localScale = new Vector2(direction, 1);
+        float haightScale = 1;
+        transform.localScale = new Vector2(direction, haightScale);
     }
 
     // 右矢印ボタンを押したか判定

@@ -2,11 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// TODO: Jumpとか基本的な動作を定義したinterfaceとか必要そう
 // Playerの操作一覧
 public class PlayerController : MonoBehaviour
 {
+    // PlayerのRigidbodyコンポーネントへアクセス
     private Rigidbody2D rigid2D;
+
+    // ジャンプ力
     private float jumpForce;
+
+    // 走るスピードの上限
+    private float maxRunSpeed;
+
+    // 走る力
     private float runForce;
 
     void Start()
@@ -14,7 +24,8 @@ public class PlayerController : MonoBehaviour
         // アタッチを行ったオブジェトのRigidコンポーネントにアクセス
         this.rigid2D = GetComponent<Rigidbody2D>();
         this.jumpForce = 600.0f;
-        this.walkForce = 30.0f;
+        this.maxRunSpeed = 2.0f;
+        this.runForce = 30.0f;
     }
 
     void Update()
@@ -26,69 +37,117 @@ public class PlayerController : MonoBehaviour
         caseMoveSideButton();
     }
 
+    // ジャンプされた場合の処理
     void caseJumpButton()
     {
-        // スペースボタンが押されたか
-        if(isJumpButton())
+        // ジャンプボタンが押されたか
+        if (isJumpButton())
         {
+            // ジャンプの高さ計算
             float haight = calculateJumpHaight();
+
+            // ジャンプ
             jump(haight);
         }
     }
 
+    // ジャンプの高さ計算
     float calculateJumpHaight()
     {
-        return this.jumpForce * 0.01;
+        // ジャンプ係数
+        float coefficient = 1;
+        return this.jumpForce * coefficient;
     }
 
+    // 左右移動の場合の処理
     void caseMoveSideButton()
     {
-        if(isRightButton())
+        // 右矢印が押されたかどうか
+        if (isRightButton())
         {
-            float speedx = calculateMoveSpeedX();
-            moveRight(speedx);
+            Debug.Log("右矢印が押されました。");
+            moveRight();
         }
 
-        if(isLeftButton())
+        // 左矢印が押されたかどうか
+        if (isLeftButton())
         {
-            float speedx = calculateMoveSpeedX();
-            moveLeft(speedx);
+            Debug.Log("左矢印が押されました。");
+            moveLeft();
         }
     }
 
-    float calculateSpeedX()
+    // 走る速さ計算
+    Vector2 calculateMoveSpeedX(float direction)
     {
-        return Mathf.Abs(this.rigid2D.velocity.x);
+        // 走るスピード計算
+        Vector2 speed = transform.right * this.runForce;
+
+        // 走る上限スピードを超えているか
+        if (isMaxOver(speed))
+        {
+            // 走る上限スピードでスピードを計算
+            return transform.right * direction * this.maxRunSpeed;
+        }
+
+        // 走る方向決定
+        return speed * direction;
     }
 
-
-    void isJumpButton()
+    // 走る速さの上限を超えているか
+    bool isMaxOver(Vector2 speed)
     {
+        return speed.x > this.maxRunSpeed;
+    }
+
+    // ジャンプボタンを押したか
+    bool isJumpButton()
+    {
+        // Spaceボタン(ジャンプボタン)を押したか
         return Input.GetKeyDown(KeyCode.Space);
     }
 
-    void moveLeft(float speed)
+    // 左への移動処理
+    void moveLeft()
     {
-        this.rigid2D.AddForce(transform.left * speed);
+        // 左へ行くための係数
+        float leftDirection = -1;
+
+        // スピード計算
+        Vector2 speed = calculateMoveSpeedX(leftDirection);
+
+        // 左方向
+        this.rigid2D.AddForce(speed);
     }
 
+    // 右への移動処理
     void moveRight()
     {
-        this.rigid2D.AddForce(transform.right * speed);
+        // 右へ行くための係数
+        float rightDirection = 1;
+
+        // スピード計算
+        Vector2 speed = calculateMoveSpeedX(rightDirection);
+
+        // 右方向
+        this.rigid2D.AddForce(speed);
     }
 
-    bool isRight()
+    // 右矢印ボタンを押したか判定
+    bool isRightButton()
     {
-        return false;
+        return Input.GetKey(KeyCode.RightArrow);
     }
 
-    bool isLeft()
+    // 左矢印ボタンを押したか判定
+    bool isLeftButton()
     {
-        return false;
+        return Input.GetKey(KeyCode.LeftArrow);
     }
 
-    void jump()
+    // ジャンプ処理
+    void jump(float haight)
     {
-        this.rigid2D.AddForce(transform.up * this.jumpForce);
+        this.rigid2D.AddForce(transform.up * haight);
     }
 }

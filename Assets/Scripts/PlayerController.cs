@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
     {
         // アタッチを行ったオブジェトのRigidコンポーネントにアクセス
         this.rigid2D = GetComponent<Rigidbody2D>();
+
+        // 各プロパティ初期化
         this.jumpForce = 600.0f;
         this.maxRunSpeed = 2.0f;
         this.runForce = 30.0f;
@@ -43,6 +45,8 @@ public class PlayerController : MonoBehaviour
         // ジャンプボタンが押されたか
         if (isJumpButton())
         {
+            Debug.Log("スペースキーが押されました。");
+
             // ジャンプの高さ計算
             float haight = calculateJumpHaight();
 
@@ -110,8 +114,12 @@ public class PlayerController : MonoBehaviour
     // 左への移動処理
     void moveLeft()
     {
+
         // 左へ行くための係数
         float leftDirection = -1;
+
+        // プレイヤーを反転
+        turnPlayer(leftDirection);
 
         // スピード計算
         Vector2 speed = calculateMoveSpeedX(leftDirection);
@@ -126,11 +134,19 @@ public class PlayerController : MonoBehaviour
         // 右へ行くための係数
         float rightDirection = 1;
 
+        // プレイヤーを反転
+        turnPlayer(rightDirection);
+
         // スピード計算
         Vector2 speed = calculateMoveSpeedX(rightDirection);
 
         // 右方向
         this.rigid2D.AddForce(speed);
+    }
+
+    void turnPlayer(float direction)
+    {
+        transform.localScale = new Vector2(direction, 1);
     }
 
     // 右矢印ボタンを押したか判定
